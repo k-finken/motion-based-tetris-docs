@@ -1,0 +1,56 @@
+{
+  "projectType": "general",
+  "projectName": "Motion-Based Tetris",
+  "projectDescription": "A Python-based Tetris game controlled entirely by hand gestures captured through your webcam, powered by computer vision.",
+  "theme": "almond",
+  "primaryColor": "#f92ede",
+  "lightColor": "#f07936",
+  "darkColor": "#243675",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Overview",
+        "pages": ["introduction", "how-it-works"]
+      },
+      {
+        "group": "Getting Started",
+        "pages": ["installation", "running-the-game"]
+      },
+      {
+        "group": "Gameplay",
+        "pages": ["controls", "scoring", "tetrominoes"]
+      },
+      {
+        "group": "Troubleshooting",
+        "pages": ["troubleshooting", "faq"]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Gesture-based controls using hand tracking via webcam",
+    "Real-time hand detection with MediaPipe and CVZone",
+    "Classic Tetris mechanics (line clearing, leveling, combos)",
+    "Shadow piece preview for landing position",
+    "Next tetromino preview panel",
+    "High score persistence across sessions",
+    "Sound effects for level-up, line clear, game over, and high score beaten",
+    "Works alongside the browser-based Tetris game at tetris.com",
+    "Hard drop gesture support",
+    "Supports both left and right hand input"
+  ],
+  "publicApiSurface": [
+    "python main.py — launch the game",
+    "pip install -r requirements.txt — install dependencies",
+    "Left hand: pinky up → move left",
+    "Left hand: thumb up → rotate left",
+    "Left hand: all fingers up → hard drop",
+    "Left hand: thumb only up → move down",
+    "Right hand: pointer finger up → move right",
+    "Right hand: thumb up → rotate right",
+    "Right hand: all fingers up → hard drop",
+    "Right hand: thumb only up → move down",
+    "Keyboard: P → pause/unpause",
+    "Keyboard: Q / ESC → quit",
+    "Keyboard: Arrow keys / WASD → fallback controls"
+  ]
+}

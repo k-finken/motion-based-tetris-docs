@@ -1,0 +1,151 @@
+---
+title: "The Seven Tetrominoes: Shapes, Colors, and Strategy"
+sidebarTitle: "Tetrominoes"
+description: "Meet all seven Tetris pieces used in Motion-Based Tetris, including their colors, shapes, and tips for placing each one efficiently with gesture controls."
+---
+
+Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based Tetris has a unique color and shape that makes it immediately recognizable on the board. A preview of the next piece is always shown in the panel beside the board, giving you time to plan your next move before the piece enters play.
+
+<Note>
+  The next piece is always shown in the preview panel on the right side of the game window — use this to plan your gestures in advance.
+</Note>
+
+## The Seven Pieces
+
+<CardGroup cols={2}>
+  <Card title="I-Piece — Long" icon="grip-lines">
+    **Internal name:** `long`
+
+    **Color:** Blue
+
+    **Shape:** Four blocks arranged in a single horizontal line across a 4×4 grid.
+
+    ```
+    O O O O
+    X X X X
+    O O O O
+    O O O O
+    ```
+
+    **Strategy:** The most powerful piece for clearing lines. A Tetris (4-line clear) is only possible with the I-piece. Use the hard drop gesture (all five fingers up) for precise placement in narrow column gaps.
+  </Card>
+
+  <Card title="O-Piece — Square" icon="square">
+    **Internal name:** `square`
+
+    **Color:** Yellow
+
+    **Shape:** A compact 2×2 square — all four blocks fill a perfect square.
+
+    ```
+    X X
+    X X
+    ```
+
+    **Strategy:** Rotation has no effect on the O-piece, so you can skip the rotate gesture entirely. It is easy to stack and great for filling wide, shallow gaps without worrying about orientation.
+  </Card>
+
+  <Card title="T-Piece — Hat" icon="table-cells-large">
+    **Internal name:** `hat`
+
+    **Color:** Pink
+
+    **Shape:** A T-shaped piece — one block on top centered over a row of three.
+
+    ```
+    O X O
+    X X X
+    O O O
+    ```
+
+    **Strategy:** The most versatile piece in the game. Use the rotate gesture (thumb + index finger up) to orient it for tight spots. It fits cleanly into many configurations and is especially useful for T-spins in narrow gaps.
+  </Card>
+
+  <Card title="S-Piece — Right Snake" icon="s">
+    **Internal name:** `right_snake`
+
+    **Color:** Green
+
+    **Shape:** An S-shaped zigzag — two blocks on the right of the top row shift left on the bottom row.
+
+    ```
+    O X X
+    X X O
+    O O O
+    ```
+
+    **Strategy:** Best placed flat in its default orientation. Avoid stacking multiple S-pieces or Z-pieces consecutively, as this creates hard-to-fill overhangs. Rotate once to place it vertically in column gaps.
+  </Card>
+
+  <Card title="Z-Piece — Left Snake" icon="z">
+    **Internal name:** `left_snake`
+
+    **Color:** Red
+
+    **Shape:** A reverse S-shape — two blocks on the left of the top row shift right on the bottom row.
+
+    ```
+    X X O
+    O X X
+    O O O
+    ```
+
+    **Strategy:** The mirror image of the S-piece. The same stacking caution applies — avoid piling Z and S pieces together. Rotate once with the gesture to place it vertically when a horizontal fit is not available.
+  </Card>
+
+  <Card title="J-Piece — Left Gun" icon="turn-down-left">
+    **Internal name:** `left_gun`
+
+    **Color:** Cyan
+
+    **Shape:** An L-shape facing left — a single block on the top-left above a row of three.
+
+    ```
+    X O O
+    X X X
+    O O O
+    ```
+
+    **Strategy:** Great for filling left-side corners and staircase patterns that slope down to the right. Rotate with the thumb + index gesture to find the orientation that slides cleanly into your current stack.
+  </Card>
+
+  <Card title="L-Piece — Right Gun" icon="turn-down-right">
+    **Internal name:** `right_gun`
+
+    **Color:** Orange
+
+    **Shape:** An L-shape facing right — a single block on the top-right above a row of three.
+
+    ```
+    O O X
+    X X X
+    O O O
+    ```
+
+    **Strategy:** The mirror of the J-piece and ideal for right-side corners and staircase patterns that slope down to the left. Pair it with the J-piece when you need to level out an uneven stack.
+  </Card>
+</CardGroup>
+
+## Rotation
+
+Performing the rotate gesture — **thumb and index finger raised** — rotates the current piece **clockwise** by 90 degrees. Each gesture press applies one clockwise rotation, so pressing it twice gives a 180° flip and three times gives a counter-clockwise rotation.
+
+Motion-Based Tetris supports **wall-kick**: if a rotation would place the piece out of bounds or inside an existing block, the game automatically attempts to shift the piece **one or two spaces left or right** to make the rotation fit. This means you can rotate pieces even when they are close to a wall or the top of your stack — the engine will resolve the placement for you wherever possible.
+
+<Info>
+  The O-piece (`square`) is the only tetromino that looks identical in all four rotations. Rotating it produces no visual change, so save that gesture for pieces that actually need it.
+</Info>
+
+## Shadow Piece
+
+A **translucent shadow** of the current piece is projected to the bottom of the board, showing exactly where the piece will land if you hard-drop it from its current horizontal position. The shadow updates in real time as you move the piece left or right with your gestures.
+
+Use the shadow to:
+
+- **Line up your placement** before committing to a hard drop.
+- **Verify gap fits** — if the shadow sits flush against the stack with no overhangs, the placement is clean.
+- **Anticipate lock position** so you can gesture the next piece immediately after the current one locks.
+
+<Tip>
+  Use the hard drop gesture (all five fingers up) only when you're sure of the placement — it instantly locks the piece and scores bonus points.
+</Tip>

@@ -1,0 +1,48 @@
+---
+title: "Motion-Based Tetris: Play Tetris with Your Hands"
+sidebarTitle: "Introduction"
+description: "Motion-Based Tetris is a Python app that uses your webcam and computer vision to let you control Tetris entirely with hand gestures — no keyboard needed."
+---
+
+Motion-Based Tetris is a Python desktop application that replaces your keyboard with hand gestures. It uses **MediaPipe** (via CVZone's `HandTrackingModule`) to track your hands through your webcam in real time, identifies which fingers are extended, and maps those gestures to keyboard inputs — which are then sent directly to the browser-based Tetris game at [tetris.com](https://tetris.com/play-tetris) using `pydirectinput`. The result is a fully hands-free Tetris experience where moving left, moving right, rotating, and hard-dropping all happen with a simple gesture.
+
+## What You Can Do
+
+<CardGroup cols={2}>
+  <Card title="Gesture Controls" icon="hand">
+    Control all Tetris moves — left, right, rotate, hard drop, and more — with natural hand gestures detected live by your webcam.
+  </Card>
+  <Card title="Webcam-Powered" icon="camera">
+    Works with any standard built-in or external webcam. No special hardware, controllers, or sensors required.
+  </Card>
+  <Card title="High Score Tracking" icon="trophy">
+    Your best scores are automatically saved between sessions so you always know your personal record to beat.
+  </Card>
+  <Card title="Sound Effects" icon="volume-high">
+    Audio feedback plays for line clears, level-ups, high score beats, and game over — keeping you immersed in every session.
+  </Card>
+</CardGroup>
+
+## Requirements
+
+Before running Motion-Based Tetris, make sure you have the following:
+
+- **Python 3.x** installed on your machine
+- **A webcam** — built-in laptop camera or any external USB webcam
+- **A modern browser** with [tetris.com](https://tetris.com/play-tetris) open and focused
+- **Windows OS** — required for `pydirectinput`, which handles low-level keyboard simulation
+
+<Note>
+  Motion-Based Tetris controls the browser-based Tetris game at tetris.com. You must have that page open and focused in your browser for the gestures to work.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" href="/installation" icon="download">
+    Install dependencies and get Motion-Based Tetris running on your machine.
+  </Card>
+  <Card title="How It Works" href="/how-it-works" icon="eye">
+    Dive into the computer vision pipeline and learn how gestures become game inputs.
+  </Card>
+</CardGroup>

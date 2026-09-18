@@ -1,0 +1,85 @@
+---
+title: "Troubleshoot Motion-Based Tetris Setup Issues"
+sidebarTitle: "Troubleshooting"
+description: "Diagnose and fix the most common problems with Motion-Based Tetris, including camera errors, missing modules, gesture recognition issues, and browser focus problems."
+---
+
+If something isn't working as expected, this page covers the most common issues encountered with Motion-Based Tetris and how to resolve them — from gesture detection failures to browser focus problems and missing Python modules.
+
+<AccordionGroup>
+
+  <Accordion title="My gestures aren't controlling Tetris">
+    The most common cause is that the browser window lost focus. Click directly on the tetris.com page to bring it back into focus before gesturing.
+
+    - The Python app must be actively running for gesture input to be processed
+    - The browser window containing tetris.com must be the active (focused) window at the OS level
+    - Check that the webcam feed displayed in the pygame app window shows your hand clearly and without obstruction
+    - Watch the **STATE** label overlaid on the camera feed — it should update (e.g. `STATE: LEFT`, `STATE: HARD DROP`) whenever a recognised gesture is detected. If it stays on `STATE: IDLE`, the gesture is not being picked up
+  </Accordion>
+
+  <Accordion title="The webcam won't open / black screen in app window">
+    If the camera feed shows a black screen or the app fails to open the webcam:
+
+    - Make sure no other application is currently using your webcam — common culprits include Zoom, Microsoft Teams, Google Meet, or any browser-based video call
+    - Close and reopen the app to release and re-acquire the camera device
+    - On **Windows**, verify that Python has camera permissions: go to **Settings → Privacy → Camera** and confirm that "Allow apps to access your camera" is enabled and that Python is listed
+    - If you have multiple cameras (e.g. a built-in webcam and an external USB camera), the app defaults to device index `0` via `cv2.VideoCapture(0)` in `main.py`. If your intended camera is not index `0`, change the value to `1` or `2` to target the correct device
+  </Accordion>
+
+  <Accordion title="ModuleNotFoundError when running python main.py">
+    This error almost always means your virtual environment is not activated, so Python cannot find the installed packages.
+
+    1. Activate your virtual environment first:
+       - **Windows:** `venv\scripts\activate`
+       - **Mac / Linux:** `source venv/bin/activate`
+    2. Then reinstall all dependencies:
+       ```bash
+       pip install -r requirements.txt
+       ```
+    3. Confirm the key packages are present:
+       ```bash
+       pip list
+       ```
+       Look for `mediapipe`, `cvzone`, and `pygame` in the output. If any are missing, the install step above should have added them.
+  </Accordion>
+
+  <Accordion title="Hand not being detected">
+    MediaPipe hand detection is sensitive to environmental conditions. If your hand is not being detected:
+
+    - **Lighting is the most common cause** — ensure your hand is well-lit with diffuse, even light. Avoid strong backlighting or deep shadows
+    - Keep your hand between **30–60 cm** from the camera for optimal detection range
+    - The detector is configured with `detectionCon=0.8` (80% confidence threshold). Try using a plain, uncluttered background to improve detection accuracy
+    - If both hands are in frame and overlapping, detection can fail. Try keeping one hand clearly visible at a time — the app checks the left hand first, then the right
+  </Accordion>
+
+  <Accordion title="Gestures are being detected but pieces move too fast / too slow">
+    Input from gestures is intentionally throttled to prevent a single held gesture from firing repeated commands:
+
+    - The app uses a cooldown of **15–20 frames** between accepted inputs (`framesBetweenInput`) to avoid accidental repeats
+    - Hold your gesture clearly and steadily for at least **0.5 seconds** to ensure it registers as a single intentional action
+    - If you are also using keyboard fallback controls alongside gestures, avoid pressing keys while actively gesturing — simultaneous inputs can cause unexpected behaviour
+  </Accordion>
+
+  <Accordion title="pygame error: No video mode has been set">
+    This error typically points to a display or graphics driver problem:
+
+    - On **Windows**, try updating your graphics drivers through Device Manager or your GPU manufacturer's software (Intel, NVIDIA, or AMD)
+    - Always run the app from a terminal within an **active desktop session**. Running it over SSH without X forwarding or a virtual display will cause this error because pygame requires a physical or virtual display to initialise
+  </Accordion>
+
+  <Accordion title="The app opens but tetris.com isn't responding to inputs">
+    `pydirectinput` simulates keystrokes at the OS level on Windows. If tetris.com is not responding:
+
+    - Confirm that tetris.com is open in your browser **and** that the browser window is the currently focused window — click directly on the browser first
+    - Try clicking on the **Tetris game canvas** itself within tetris.com, not just the browser tab or toolbar
+    - Disable any browser extensions that might intercept or block keyboard input, such as gaming blockers, accessibility tools, or custom keyboard shortcut managers
+    - Verify you are running the app on **Windows** — `pydirectinput` (version 1.0.4 as specified in `requirements.txt`) is a Windows-only library and will not send OS-level keyboard events on Mac or Linux
+  </Accordion>
+
+</AccordionGroup>
+
+## Getting Help
+
+<Note>
+  Before reporting an issue, check the following: confirm you are running **Python 3.x** (not Python 2), verify your virtual environment is activated and all packages from `requirements.txt` are installed, and note the **exact error message** from the terminal output. Including this information — along with your operating system and Python version (`python --version`) — will make it much easier to diagnose the problem.
+</Note>

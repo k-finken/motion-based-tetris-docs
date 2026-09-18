@@ -1,0 +1,77 @@
+---
+title: "How Motion-Based Tetris Detects Your Gestures"
+sidebarTitle: "How It Works"
+description: "Discover how Motion-Based Tetris uses MediaPipe hand tracking and CVZone to translate webcam footage into real-time Tetris controls."
+---
+
+Motion-Based Tetris bridges your physical movements and the Tetris board through a continuous computer vision pipeline. Every game tick, your webcam feed is captured, hands are located and analyzed, finger states are decoded into a known gesture, and that gesture is translated into a keyboard press — all before the next frame is rendered. The result is a loop that runs at up to 50 ticks per second: **webcam feed → hand detection → finger state reading → gesture mapping → keyboard simulation → Tetris control**.
+
+## The Computer Vision Pipeline
+
+<Steps>
+  <Step title="Capture Webcam Feed">
+    OpenCV (`cv2`) opens your default camera (`VideoCapture(0)`) and reads a new frame on every game tick inside the main update loop. This raw BGR frame is the starting point for all gesture analysis.
+  </Step>
+
+  <Step title="Detect Hands">
+    CVZone's `HandDetector` — built on top of Google's MediaPipe — scans the frame for up to **2 hands** simultaneously. The detector is configured with an 80% confidence threshold (`detectionCon=0.8`), so only clear, well-lit hand shapes trigger detection and reduce false positives.
+  </Step>
+
+  <Step title="Read Finger States">
+    For each hand found in the frame, `detector.fingersUp()` analyses the 21 hand landmarks returned by MediaPipe and returns an array of **5 values** — one per finger in the order `[thumb, index, middle, ring, pinky]`. A value of `1` means the finger is raised; `0` means it is folded down.
+  </Step>
+
+  <Step title="Map Gesture to Action">
+    The 5-element finger-state array is converted to a tuple and looked up in one of two Python dictionaries — one for the **left hand** and one for the **right hand**. Each dictionary maps a specific tuple to a `(state_label, key)` pair. If the tuple matches a known entry, the corresponding keyboard key is identified; otherwise the app falls back to an `IDLE` state with no key action.
+  </Step>
+
+  <Step title="Simulate Keypress">
+    `pydirectinput.press()` fires the identified key as a low-level system input event. Because `pydirectinput` operates at the DirectInput level (rather than sending a Python event to a focused window), the browser running Tetris receives the keystroke exactly as though a physical key was pressed on the keyboard.
+  </Step>
+
+  <Step title="Update Display">
+    After the gesture is processed, the webcam frame is annotated with the current gesture state label, converted from BGR to RGB, rotated and scaled to fit the layout, and then blitted onto the pygame surface alongside the Tetris board. Both the game and the camera feed are visible in one unified window.
+  </Step>
+</Steps>
+
+## Gesture Recognition
+
+Gestures are **not** checked on every single frame. A `framesBetweenInput` counter starts at `20` and counts down each tick. Only when it reaches `0` does the app evaluate finger states and trigger a key press — at which point the counter is reset to `15`. This throttle prevents a single held gesture from firing dozens of repeated inputs in a row.
+
+The full gesture dictionaries used in `main.py` are shown below. The tuple key represents `[thumb, index, middle, ring, pinky]`, where `1` = finger raised and `0` = finger folded.
+
+```python
+left = {
+    tuple([0, 1, 0, 0, 0]): ('STATE: LEFT', 'left'),
+    tuple([1, 1, 0, 0, 0]): ('STATE: ROTATE LEFT', 'up'),
+    tuple([1, 1, 1, 1, 1]): ('STATE: HARD DROP', 'space'),
+    tuple([1, 0, 0, 0, 0]): ('STATE: DOWN', 'down'),
+}
+right = {
+    tuple([0, 1, 0, 0, 0]): ('STATE: RIGHT', 'right'),
+    tuple([1, 1, 0, 0, 0]): ('STATE: ROTATE RIGHT', 'up'),
+    tuple([1, 1, 1, 1, 1]): ('STATE: HARD DROP', 'space'),
+    tuple([1, 0, 0, 0, 0]): ('STATE: DOWN', 'down'),
+}
+```
+
+The tuple represents `[thumb, index, middle, ring, pinky]` — `1` = finger raised, `0` = finger down.
+
+## Two-Hand Input
+
+Both hands are tracked simultaneously in every eligible frame. The **left hand** dictionary governs left-side actions (move left, rotate left) and the **right hand** dictionary governs right-side actions (move right, rotate right). Shared actions like hard drop and move down are available on both hands.
+
+When evaluating a frame, the left hand's gesture is checked first. If it matches a known entry in the `left` dictionary, that action fires and the right hand is skipped for that tick. If the left hand gesture is unrecognized (or the left hand is not visible), the right hand's gesture is evaluated against the `right` dictionary. This priority ordering ensures that simultaneous ambiguous gestures do not produce conflicting inputs.
+
+<Note>
+  The game must be checked every ~15–20 frames rather than every frame to prevent accidental repeated inputs from a single held gesture.
+</Note>
+
+## Technology Stack
+
+| Library | Role |
+|---|---|
+| **OpenCV (`cv2`)** | Webcam capture and per-frame image reading |
+| **CVZone / MediaPipe** | Hand landmark detection and per-finger state reading via `HandDetector` and `fingersUp()` |
+| **pydirectinput** | Simulates low-level keyboard events that browsers and other focused applications can receive |
+| **pygame** | Renders the game overlay, live camera feed, Tetris board, and score panel in a single unified window |

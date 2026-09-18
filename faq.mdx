@@ -1,0 +1,91 @@
+---
+title: "Frequently Asked Questions about Motion-Based Tetris"
+sidebarTitle: "FAQ"
+description: "Answers to common questions about Motion-Based Tetris: OS support, camera requirements, gesture accuracy, score saving, and running without gestures."
+---
+
+Quick answers to the most frequently asked questions about Motion-Based Tetris — covering platform support, hardware requirements, gesture mechanics, and how the app works under the hood.
+
+<AccordionGroup>
+
+  <Accordion title="Does this work on Mac or Linux?">
+    Partially. The app uses `pydirectinput` (version 1.0.4) for OS-level keyboard simulation to send inputs to the browser, and **`pydirectinput` is Windows-only**. The remaining stack — OpenCV, MediaPipe, and pygame — is cross-platform and will run on Mac and Linux without modification.
+
+    On Mac or Linux, the gesture detection and game display will function, but the gestures will not be able to control tetris.com in the browser. You can still use the built-in **keyboard controls** (arrow keys, WASD, Space, P) on any platform.
+  </Accordion>
+
+  <Accordion title="What kind of webcam do I need?">
+    Any standard USB or built-in laptop webcam is sufficient. The app captures video using OpenCV's default device (`cv2.VideoCapture(0)`), which selects the first available camera on your system.
+
+    A resolution of **640×480 or higher** is recommended for reliable hand landmark detection by MediaPipe. Very low-resolution or low-framerate cameras may reduce detection accuracy.
+  </Accordion>
+
+  <Accordion title="Can I play without gestures (keyboard only)?">
+    Yes. Keyboard controls are always active and are handled independently of gesture input. You can play the entire game using:
+
+    | Action | Keys |
+    |---|---|
+    | Move left | `←` or `A` |
+    | Move right | `→` or `D` |
+    | Rotate | `↑` or `W` |
+    | Soft drop | `↓` or `S` |
+    | Hard drop | `Space` |
+    | Pause | `P` |
+    | Quit to menu | `Escape` |
+
+    Gesture input is layered on top of keyboard input — disabling one has no effect on the other.
+  </Accordion>
+
+  <Accordion title="Where is my high score saved?">
+    High scores are saved in a hidden file called **`.highscores`** located in the project folder (the same directory as `main.py`). The score is written automatically each time a game ends via the `write_score()` function in `scores.py`.
+
+    - **Do not delete this file** if you want to preserve your high score between sessions
+    - To reset your high score back to zero, delete the `.highscores` file or clear its contents
+  </Accordion>
+
+  <Accordion title="Can both hands be used at the same time?">
+    The app tracks up to **2 hands simultaneously** using `HandDetector(detectionCon=0.8, maxHands=2)`. However, only one gesture is acted upon per input cycle — the **left hand is checked first**, and if it produces a recognised gesture, the right hand is ignored for that cycle.
+
+    You can use either hand independently. You do not need to use both hands at the same time — a single hand performing the correct finger configuration is all that's required to trigger an action.
+  </Accordion>
+
+  <Accordion title="How do I change the camera being used?">
+    The app selects a camera by index in `main.py`:
+
+    ```python
+    video = cv2.VideoCapture(0)
+    ```
+
+    The `0` refers to the first camera device detected by OpenCV. To use a different camera:
+
+    1. Open `main.py` in a text editor
+    2. Change `cv2.VideoCapture(0)` to `cv2.VideoCapture(1)` for the second camera, or `cv2.VideoCapture(2)` for the third, and so on
+    3. Save the file and restart the app
+
+    If you are unsure which index your preferred camera is, increment the number from `0` upward until the correct feed appears.
+  </Accordion>
+
+  <Accordion title="Why does the game check gestures every 15–20 frames instead of every frame?">
+    Reading and acting on a gesture every single frame would cause **uncontrolled input repetition**. For example, holding your index finger up to trigger "move left" would fire the left-arrow command many dozens of times per second at 50 fps, making the piece shoot across the board instantly.
+
+    The cooldown — implemented via the `framesBetweenInput` counter, which resets to `15` or `20` after each accepted input — ensures that each gesture registers as **one deliberate action**. This makes the control feel intentional and predictable, matching the behaviour of a single key press.
+  </Accordion>
+
+  <Accordion title="Can I modify the gesture mappings?">
+    Yes. The gesture-to-key mappings are defined near the top of `main.py` in two dictionaries called `left` and `right`:
+
+    ```python
+    left = {
+        tuple([0, 1, 0, 0, 0]): ('STATE: LEFT', 'left'),
+        tuple([1, 1, 0, 0, 0]): ('STATE: ROTATE LEFT', 'up'),
+        tuple([1, 1, 1, 1, 1]): ('STATE: HARD DROP', 'space'),
+        tuple([1, 0, 0, 0, 0]): ('STATE: DOWN', 'down'),
+    }
+    ```
+
+    Each dictionary key is a tuple of **5 values** representing the fingers `[thumb, index, middle, ring, pinky]`, where `1` means the finger is extended and `0` means it is folded. Each value is a tuple of `(state_label, keyboard_key)` — the label shown on the camera feed and the key sent to the browser via `pydirectinput`.
+
+    To remap a gesture, change the finger tuple key or the keyboard key string. To add a new gesture, add a new entry following the same pattern. Valid key names are those accepted by `pydirectinput.press()`, such as `'left'`, `'right'`, `'up'`, `'down'`, `'space'`, etc.
+  </Accordion>
+
+</AccordionGroup>

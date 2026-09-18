@@ -1,0 +1,130 @@
+---
+title: "Scoring System and Level Progression in Tetris"
+sidebarTitle: "Scoring"
+description: "Learn how Motion-Based Tetris calculates your score, builds combo multipliers, increases speed with each level, and saves your all-time high score."
+---
+
+Motion-Based Tetris uses a classic Tetris-style scoring system augmented with **combo multipliers** that reward consecutive line-clearing moves. Every piece you lock contributes to your score — whether through cleared lines, hard-drop distance, or a growing chain of combos. Understanding the system helps you make smarter decisions about when to go for multi-line clears and when to sacrifice speed for safety.
+
+---
+
+## Line Clear Points
+
+Points are awarded whenever a locked piece completes one or more full rows. The formula scales **quadratically** with the number of lines cleared at once, then multiplies by your current combo:
+
+```
+score += 100 × lines_cleared² × combo
+```
+
+| Lines Cleared | Base Points (combo ×1) |
+|---|---|
+| 1 line (Single) | 100 pts |
+| 2 lines (Double) | 400 pts |
+| 3 lines (Triple) | 900 pts |
+| 4 lines (Tetris) | 1,600 pts |
+
+<Tip>
+  Clearing four lines at once (a Tetris) awards **sixteen times** as many base points as a single-line clear — far more than four individual singles. Stack strategically and aim for multi-line clears whenever possible.
+</Tip>
+
+---
+
+## Hard Drop Bonus
+
+Triggering a hard drop (gesture: all fingers up `[1,1,1,1,1]`, or keyboard: `Space`) instantly slams the active piece to the lowest valid row and awards **10 points per cell** the piece travels:
+
+```
+score += 10 × cells_dropped
+```
+
+On a standard 20-visible-row board, a piece dropped from the very top of the board can add up to **200 bonus points** on top of any line-clear points earned when it locks.
+
+---
+
+## Combo Multiplier
+
+The combo multiplier starts at **1** at the beginning of each game and updates every time a piece locks:
+
+- **Line(s) cleared → combo increases by 1** for the next piece
+- **No lines cleared → combo resets to 1**
+
+```
+combo = combo + 1   # if lines were cleared
+combo = 1           # if no lines were cleared
+```
+
+The multiplier is applied at the moment the lines are scored, so a combo of **3** on a Double clear yields `100 × 4 × 3 = 1,200 pts` instead of the base 400.
+
+<Info>
+  The current combo value is always visible in the side panel of the game window, labelled **Combo**, so you can track your chain in real time.
+</Info>
+
+Chaining even single-line clears back-to-back is often more efficient than letting gaps break your combo. Plan ahead to keep rows filling consistently rather than building up an uneven stack.
+
+---
+
+## Level Progression
+
+Your level increases automatically as you clear lines. The threshold is:
+
+```
+if lines_total >= level × 10:
+    level += 1
+```
+
+Every **10 cumulative lines** advances you one level. The table below shows the total lines required to reach each level:
+
+| Current Level | Lines Needed to Advance | Cumulative Lines |
+|---|---|---|
+| 1 → 2 | 10 lines | 10 |
+| 2 → 3 | 10 lines | 20 |
+| 3 → 4 | 10 lines | 30 |
+| 4 → 5 | 10 lines | 40 |
+| 5 → 6 | 10 lines | 50 |
+| … | … | level × 10 |
+
+### Falling Speed
+
+Each level directly increases how fast pieces fall. The speed formula is:
+
+```
+downwards_speed = 0.6 ^ (1 + level / 10.0)
+```
+
+`0.6` is the base interval (approximately one drop every 400 ms at level 1). Because this is an **exponential decay**, speed increases become more aggressive at higher levels — level 5 is noticeably faster than level 4, and higher levels demand faster reflexes and cleaner gestures.
+
+<Warning>
+  At high levels, pieces fall so quickly that gesture detection's 15–20 frame cooldown can limit how many moves you make per piece. Practise clean, decisive gestures to maximise your input rate.
+</Warning>
+
+---
+
+## High Score
+
+Your best score is automatically saved to a `.highscores` file in the project directory after every game. This file persists between sessions, so your all-time record is always preserved regardless of how many games you play.
+
+Key behaviours:
+
+- The high score is **loaded at startup** and displayed on the main menu.
+- During a game, your current score is compared against the saved high score in real time.
+- The **first time** your score surpasses your personal best in a session, a special **high score beaten** sound plays as a reward cue.
+- The high score is written back to disk at the end of every game (including game-overs), so it is always up to date.
+
+<Note>
+  The high score beaten sound plays **only once per session**, even if you continue climbing past your record. This prevents the sound from firing repeatedly when every new point is a new best.
+</Note>
+
+---
+
+## Sound Effects
+
+The game uses four distinct audio cues tied to scoring milestones:
+
+| Event | Sound | Trigger Condition |
+|---|---|---|
+| Line cleared | `linecleared.wav` | One or more complete rows are removed |
+| Level up | `levelup.wav` | Cumulative lines cross the next `level × 10` threshold |
+| High score beaten | `highscorebeaten.wav` | Score exceeds the saved high score for the first time this session (only plays if your previous high score was greater than 0) |
+| Game over | `gameover.wav` | A newly spawned piece cannot fit on the board |
+
+All sounds are loaded from the `resources/` folder at game start. Ensure this folder and its `.wav` files are present alongside `main.py` for audio to work correctly.

@@ -1,0 +1,91 @@
+---
+title: "Gesture and Keyboard Controls for Motion-Based Tetris"
+sidebarTitle: "Controls"
+description: "Complete reference for every hand gesture and keyboard shortcut in Motion-Based Tetris, with finger diagrams and tips for clean recognition."
+---
+
+Motion-Based Tetris supports two input methods: **hand gestures** (primary) captured via your webcam, and **keyboard shortcuts** (fallback) for situations where gesture recognition is unavailable or inconvenient. Both methods can be used interchangeably during a session. Gesture input is sampled on a rolling timer — the game checks for a new gesture **every 15–20 frames**, so each recognized pose triggers exactly one action.
+
+---
+
+## Hand Gestures
+
+The game uses [cvzone's HandTrackingModule](https://github.com/cvzone/cvzone) to read which fingers are raised on each hand. Every gesture is represented internally as a five-element array:
+
+```
+[thumb, index, middle, ring, pinky]
+```
+
+Each position is either `1` (finger raised) or `0` (finger down). For example, `[0, 1, 0, 0, 0]` means only the index finger is extended.
+
+<Note>
+  Both hands must be visible in the webcam frame for gesture input to activate. If only one hand (or no hands) is detected, the game falls back to idle — no action is sent.
+</Note>
+
+The game reads the **left hand** and **right hand** independently. Left-hand gestures control leftward actions; right-hand gestures control rightward actions. If both hands show a recognized gesture simultaneously, the **left hand takes priority**.
+
+---
+
+### Left Hand Gestures
+
+| Gesture | Finger Array | Action |
+|---|---|---|
+| Index finger up | `[0, 1, 0, 0, 0]` | Move Left |
+| Thumb + Index up | `[1, 1, 0, 0, 0]` | Rotate Left |
+| All fingers up | `[1, 1, 1, 1, 1]` | Hard Drop |
+| Thumb only up | `[1, 0, 0, 0, 0]` | Move Down |
+| No fingers up / other | — | Idle (no action) |
+
+---
+
+### Right Hand Gestures
+
+| Gesture | Finger Array | Action |
+|---|---|---|
+| Index finger up | `[0, 1, 0, 0, 0]` | Move Right |
+| Thumb + Index up | `[1, 1, 0, 0, 0]` | Rotate Right |
+| All fingers up | `[1, 1, 1, 1, 1]` | Hard Drop |
+| Thumb only up | `[1, 0, 0, 0, 0]` | Move Down |
+| No fingers up / other | — | Idle (no action) |
+
+<Note>
+  The game checks for input **every 15–20 frames**. Hold a gesture briefly and clearly — quick flashes may not register. When input is detected, the cooldown resets to 15 frames before the next gesture is read.
+</Note>
+
+---
+
+## Keyboard Controls
+
+Keyboard shortcuts mirror all gesture actions and can be used as a full fallback if the webcam is unavailable or lighting conditions make gesture detection unreliable.
+
+| Key | Action |
+|---|---|
+| `←` Arrow Left / `A` | Move piece left |
+| `→` Arrow Right / `D` | Move piece right |
+| `↑` Arrow Up / `W` | Rotate piece |
+| `↓` Arrow Down / `S` | Soft drop (hold to fall faster) |
+| `Space` | Hard drop (instantly places piece) |
+| `P` | Pause / Resume |
+| `Esc` or close window | End game and return to menu |
+
+---
+
+## Tips for Clean Gesture Recognition
+
+<AccordionGroup>
+  <Accordion title="Hand positioning">
+    Keep your hand **30–60 cm from the camera** and centred in the frame. Being too close can cut off fingers; being too far reduces detection accuracy.
+  </Accordion>
+  <Accordion title="Lighting">
+    Ensure **good, even lighting** falls on your hand. Avoid strong backlighting (e.g. sitting in front of a bright window), which can silhouette your hand and confuse the detector.
+  </Accordion>
+  <Accordion title="Background">
+    A **plain, uncluttered background** behind your hands helps the model isolate them cleanly. Avoid backgrounds with lots of hand-like shapes or skin-tone objects.
+  </Accordion>
+  <Accordion title="Hold duration">
+    Hold each gesture for at least **1–2 frames** (roughly 20–40 ms at 50 fps) to ensure it falls within a detection window. Snap gestures that resolve in a single frame are likely to be missed.
+  </Accordion>
+  <Accordion title="Reading the on-screen state">
+    The **current detected state** is printed as white text directly on the live webcam feed displayed in the game window (e.g. `STATE: LEFT`, `STATE: HARD DROP`, `STATE: IDLE`). Use this as real-time feedback to confirm your gestures are being read correctly.
+  </Accordion>
+</AccordionGroup>

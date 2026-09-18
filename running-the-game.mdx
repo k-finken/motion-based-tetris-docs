@@ -1,0 +1,87 @@
+---
+title: "Run Motion-Based Tetris and Start Playing"
+sidebarTitle: "Running the Game"
+description: "Launch Motion-Based Tetris, open Tetris.com in your browser, and start controlling pieces with your hands in three simple steps."
+---
+
+Playing Motion-Based Tetris requires two things open at the same time: the **Python app**, which reads your webcam and processes your hand gestures, and **tetris.com**, which actually runs the Tetris game in your browser. The Python app translates your gestures into keyboard inputs and sends them directly to whichever window currently has focus — so the order in which you open them matters.
+
+## Steps
+
+<Steps>
+  <Step title="Activate Your Virtual Environment">
+    Before each session, activate the virtual environment you created during installation. This ensures the correct packages are available when you run the app.
+
+    <Tabs>
+      <Tab title="Windows">
+        ```bash
+        venv\scripts\activate
+        ```
+      </Tab>
+      <Tab title="Mac / Linux">
+        ```bash
+        source venv/bin/activate
+        ```
+      </Tab>
+    </Tabs>
+
+    You should see `(venv)` appear at the start of your terminal prompt once it is active.
+  </Step>
+
+  <Step title="Open Tetris.com">
+    In your browser, navigate to:
+
+    **[https://tetris.com/play-tetris](https://tetris.com/play-tetris)**
+
+    Once the page loads, **click somewhere on the game area** to give the browser window keyboard focus. The gesture-to-keypress pipeline only works when the browser is the active foreground window.
+
+    <Warning>
+      The browser window must stay in focus for the entire session. If you click anywhere outside the browser — including the Python app window or your terminal — your gestures will stop controlling the game until you click back on the browser.
+    </Warning>
+  </Step>
+
+  <Step title="Launch the App">
+    In your terminal (with the virtual environment active), start the Python application:
+
+    ```bash
+    python main.py
+    ```
+
+    The pygame window will open showing the Tetris board and the main menu. Select **Play!** to start a game. Once a game is running, the right side of the window will display your live webcam feed alongside the game controls.
+  </Step>
+
+  <Step title="Start Gesturing">
+    Hold **both hands** in front of your webcam — the app requires two hands to be visible before it registers any input. Raise or lower your fingers to trigger the corresponding game action. The current detected state (for example, `STATE: LEFT` or `STATE: IDLE`) is shown as a text overlay on the webcam feed in the bottom-right of the app window.
+
+    The app checks for new input approximately every 15–20 frames, so hold each gesture briefly and steadily for reliable detection.
+
+    | Gesture | Action |
+    |---|---|
+    | Left hand — index finger up | Move piece **left** |
+    | Left hand — thumb + index up | **Rotate left** |
+    | Right hand — index finger up | Move piece **right** |
+    | Right hand — thumb + index up | **Rotate right** |
+    | Either hand — thumb up only | Move piece **down** |
+    | Either hand — all five fingers up | **Hard drop** |
+    | No fingers raised | **Idle** (no action) |
+  </Step>
+</Steps>
+
+## The Game Window
+
+The pygame window is divided into two areas side by side:
+
+- **Left / center panel** — the Tetris board where pieces fall. A sidebar next to the board displays your current **Score**, **Level**, **Lines** cleared, and **Combo** multiplier, as well as a preview of the next tetromino.
+- **Right panel** — a live feed from your webcam, scaled and embedded directly in the game window. The current gesture state (e.g. `STATE: RIGHT`, `STATE: IDLE`) is drawn as white text in the lower-left corner of the webcam feed so you can see what the app is detecting in real time.
+
+## Pausing and Quitting
+
+| Key | Action |
+|---|---|
+| `P` | Pause / resume the current game |
+| `ESC` | End the current game and return to the main menu |
+| Close the window | Quit the application entirely |
+
+<Tip>
+  Keep your hand well-lit and clearly visible to the camera. Avoid busy or cluttered backgrounds — a plain wall or solid-color surface behind your hands gives MediaPipe the clearest signal and results in the most accurate gesture detection.
+</Tip>

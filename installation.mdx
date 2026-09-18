@@ -1,0 +1,87 @@
+---
+title: "Install Motion-Based Tetris on Your Computer"
+sidebarTitle: "Installation"
+description: "Set up Motion-Based Tetris in minutes: clone the repo, create a virtual environment, and install all Python dependencies with a single pip command."
+---
+
+Motion-Based Tetris is a Python desktop app that turns your webcam into a game controller — MediaPipe reads your hand gestures and translates them into keyboard inputs on [tetris.com](https://tetris.com/play-tetris). Before installing, it's strongly recommended to use a **virtual environment** so the project's dependencies stay isolated from your system Python and don't conflict with other projects.
+
+## Prerequisites
+
+- **Python 3.x** installed and available on your PATH
+- **Git** installed
+- **A webcam** (built-in laptop camera or USB webcam)
+- **Windows OS** — required because `pydirectinput` uses the Windows `SendInput` API to simulate keyboard events that the browser can receive
+- **A modern web browser** to run Tetris.com
+
+## Installation Steps
+
+<Steps>
+  <Step title="Clone the Repository">
+    Download the project source code and navigate into the project folder:
+
+    ```bash
+    git clone https://github.com/k-finken/Motion-Based-Tetris.git
+    cd Motion-Based-Tetris
+    ```
+  </Step>
+
+  <Step title="Create a Virtual Environment">
+    Create an isolated Python environment inside the project folder, then activate it.
+
+    <Tabs>
+      <Tab title="Windows">
+        ```bash
+        python -m venv venv
+        venv\scripts\activate
+        ```
+      </Tab>
+      <Tab title="Mac / Linux">
+        ```bash
+        python3 -m venv venv
+        source venv/bin/activate
+        ```
+      </Tab>
+    </Tabs>
+
+    When the virtual environment is active you will see `(venv)` prepended to your terminal prompt.
+  </Step>
+
+  <Step title="Install Dependencies">
+    With the virtual environment active, install all required packages in one command:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+    This installs `mediapipe`, `opencv-python`, `cvzone`, `pydirectinput`, `PyAutoGUI`, and their supporting libraries. Because `pygame` is used by the app but is not listed in `requirements.txt`, install it separately:
+
+    ```bash
+    pip install pygame
+    ```
+  </Step>
+
+  <Step title="Verify Installation">
+    Run the app to confirm everything installed correctly:
+
+    ```bash
+    python main.py
+    ```
+
+    If the pygame game window opens and your webcam activates, the installation was successful. You will see the main menu with **Play!** and **Quit** options.
+  </Step>
+</Steps>
+
+<Note>
+  If you see an error about missing modules, make sure your virtual environment is activated before running `pip install`. You should see `(venv)` in your terminal prompt — if you don't, re-run the activate command for your OS from Step 2 above.
+</Note>
+
+## Key Dependencies
+
+| Package | Role |
+|---|---|
+| `mediapipe` | Google's hand landmark detection framework — identifies the 21 key points on each hand in real time |
+| `cvzone` | Simplified computer-vision helper built on top of MediaPipe; provides the `HandDetector` class used to check which fingers are raised |
+| `opencv-python` | Captures the webcam feed frame-by-frame and handles image color conversion before rendering |
+| `pydirectinput` | Simulates low-level Windows keyboard input (`SendInput`) so that key presses from Python are received by the browser running Tetris.com |
+| `pygame` | Renders the game window, draws the Tetris board, plays sound effects, and embeds the live webcam feed in the app UI |

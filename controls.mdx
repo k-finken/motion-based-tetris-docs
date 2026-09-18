@@ -12,7 +12,7 @@ Motion-Based Tetris supports two input methods: **hand gestures** (primary) capt
 
 The game uses [cvzone's HandTrackingModule](https://github.com/cvzone/cvzone) to read which fingers are raised on each hand. Every gesture is represented internally as a five-element array:
 
-```
+```text
 [thumb, index, middle, ring, pinky]
 ```
 
@@ -31,7 +31,7 @@ The game reads the **left hand** and **right hand** independently. Left-hand ges
 | Gesture | Finger Array | Action |
 |---|---|---|
 | Index finger up | `[0, 1, 0, 0, 0]` | Move Left |
-| Thumb + Index up | `[1, 1, 0, 0, 0]` | Rotate Left |
+| Thumb + Index up | `[1, 1, 0, 0, 0]` | Rotate |
 | All fingers up | `[1, 1, 1, 1, 1]` | Hard Drop |
 | Thumb only up | `[1, 0, 0, 0, 0]` | Move Down |
 | No fingers up / other | — | Idle (no action) |
@@ -43,7 +43,7 @@ The game reads the **left hand** and **right hand** independently. Left-hand ges
 | Gesture | Finger Array | Action |
 |---|---|---|
 | Index finger up | `[0, 1, 0, 0, 0]` | Move Right |
-| Thumb + Index up | `[1, 1, 0, 0, 0]` | Rotate Right |
+| Thumb + Index up | `[1, 1, 0, 0, 0]` | Rotate |
 | All fingers up | `[1, 1, 1, 1, 1]` | Hard Drop |
 | Thumb only up | `[1, 0, 0, 0, 0]` | Move Down |
 | No fingers up / other | — | Idle (no action) |
@@ -66,7 +66,8 @@ Keyboard shortcuts mirror all gesture actions and can be used as a full fallback
 | `↓` Arrow Down / `S` | Soft drop (hold to fall faster) |
 | `Space` | Hard drop (instantly places piece) |
 | `P` | Pause / Resume |
-| `Esc` or close window | End game and return to menu |
+| `Esc` | End game and return to the main menu |
+| Close window | Exit the application entirely |
 
 ---
 

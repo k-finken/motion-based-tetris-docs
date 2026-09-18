@@ -1,7 +1,7 @@
 ---
-title: "Run Motion-Based Tetris and Start Playing"
+title: "Launch and Play Motion-Based Tetris with Hand Gestures"
 sidebarTitle: "Running the Game"
-description: "Launch Motion-Based Tetris, open Tetris.com in your browser, and start controlling pieces with your hands in three simple steps."
+description: "Launch Motion-Based Tetris, navigate to Tetris.com, and start controlling Tetris pieces with hand gestures detected live through your webcam."
 ---
 
 Playing Motion-Based Tetris requires two things open at the same time: the **Python app**, which reads your webcam and processes your hand gestures, and **tetris.com**, which actually runs the Tetris game in your browser. The Python app translates your gestures into keyboard inputs and sends them directly to whichever window currently has focus — so the order in which you open them matters.
@@ -51,19 +51,25 @@ Playing Motion-Based Tetris requires two things open at the same time: the **Pyt
   </Step>
 
   <Step title="Start Gesturing">
-    Hold **both hands** in front of your webcam — the app requires two hands to be visible before it registers any input. Raise or lower your fingers to trigger the corresponding game action. The current detected state (for example, `STATE: LEFT` or `STATE: IDLE`) is shown as a text overlay on the webcam feed in the bottom-right of the app window.
+    Hold **both hands** in front of your webcam — the app requires both hands to be visible before it registers any input. Raise or lower your fingers to trigger the corresponding game action. The current detected state (for example, `STATE: ROTATE LEFT` or `STATE: IDLE`) is drawn as a text overlay at the bottom of the webcam feed so you can confirm what the app is detecting.
 
-    The app checks for new input approximately every 15–20 frames, so hold each gesture briefly and steadily for reliable detection.
+    The app checks for new input approximately every 15–20 frames, so hold each gesture briefly and steadily for reliable detection. If both hands trigger a gesture simultaneously, the **left hand takes priority**.
 
-    | Gesture | Action |
-    |---|---|
-    | Left hand — index finger up | Move piece **left** |
-    | Left hand — thumb + index up | **Rotate left** |
-    | Right hand — index finger up | Move piece **right** |
-    | Right hand — thumb + index up | **Rotate right** |
-    | Either hand — thumb up only | Move piece **down** |
-    | Either hand — all five fingers up | **Hard drop** |
-    | No fingers raised | **Idle** (no action) |
+    | Gesture (finger order: thumb, index, middle, ring, pinky) | State label | Action |
+    |---|---|---|
+    | Left hand — index only `[0,1,0,0,0]` | `STATE: LEFT` | Move piece **left** |
+    | Left hand — thumb + index `[1,1,0,0,0]` | `STATE: ROTATE LEFT` | **Rotate** piece |
+    | Left hand — all five fingers `[1,1,1,1,1]` | `STATE: HARD DROP` | **Hard drop** |
+    | Left hand — thumb only `[1,0,0,0,0]` | `STATE: DOWN` | Move piece **down** |
+    | Right hand — index only `[0,1,0,0,0]` | `STATE: RIGHT` | Move piece **right** |
+    | Right hand — thumb + index `[1,1,0,0,0]` | `STATE: ROTATE RIGHT` | **Rotate** piece |
+    | Right hand — all five fingers `[1,1,1,1,1]` | `STATE: HARD DROP` | **Hard drop** |
+    | Right hand — thumb only `[1,0,0,0,0]` | `STATE: DOWN` | Move piece **down** |
+    | No matching gesture | `STATE: IDLE` | No action |
+
+    <Note>
+      Both rotate gestures (`STATE: ROTATE LEFT` and `STATE: ROTATE RIGHT`) send the same keypress and rotate the piece in the same direction. The label simply indicates which hand triggered the rotation.
+    </Note>
   </Step>
 </Steps>
 

@@ -1,12 +1,15 @@
 ---
 title: "Motion-Based Tetris: Play Tetris with Hand Gestures"
 sidebarTitle: "Home"
-description: "Welcome to Motion-Based Tetris — a Python app that lets you control Tetris using hand gestures captured by your webcam."
+description: "Control Tetris on tetris.com using only your hands — Motion-Based Tetris uses your webcam and hand gestures to replace the keyboard entirely."
 ---
 
 Motion-Based Tetris is a Python desktop application that uses your webcam to detect hand gestures in real time and translate them into Tetris controls on [tetris.com](https://tetris.com/play-tetris). Powered by MediaPipe and CVZone, the app reads which fingers you're holding up and fires the corresponding keyboard inputs — so you can move, rotate, and drop pieces without ever touching your keyboard.
 
 <CardGroup cols={2}>
+  <Card title="Introduction" icon="book-open" href="/introduction">
+    Learn what Motion-Based Tetris is and what you need to run it
+  </Card>
   <Card title="Installation" icon="download" href="/installation">
     Set up Python dependencies and get the app running
   </Card>
@@ -15,6 +18,9 @@ Motion-Based Tetris is a Python desktop application that uses your webcam to det
   </Card>
   <Card title="How It Works" icon="eye" href="/how-it-works">
     Understand the computer vision pipeline
+  </Card>
+  <Card title="Running the Game" icon="play" href="/running-the-game">
+    Launch the app and start playing with gestures
   </Card>
   <Card title="Troubleshooting" icon="wrench" href="/troubleshooting">
     Fix common setup and camera issues
@@ -44,6 +50,6 @@ Motion-Based Tetris is a Python desktop application that uses your webcam to det
     python main.py
     ```
 
-    A webcam preview window will appear. Hold your hand up in front of the camera and start making gestures to control the Tetris pieces. Press `q` at any time to quit.
+    The game window will open. Make sure **both hands are visible** in the webcam feed displayed inside the window — gestures are only detected when both hands are in frame. Start making gestures to control the Tetris pieces. Press `Escape` at any time to return to the menu.
   </Step>
 </Steps>

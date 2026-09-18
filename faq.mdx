@@ -9,7 +9,7 @@ Quick answers to the most frequently asked questions about Motion-Based Tetris �
 <AccordionGroup>
 
   <Accordion title="Does this work on Mac or Linux?">
-    Partially. The app uses `pydirectinput` (version 1.0.4) for OS-level keyboard simulation to send inputs to the browser, and **`pydirectinput` is Windows-only**. The remaining stack — OpenCV, MediaPipe, and pygame — is cross-platform and will run on Mac and Linux without modification.
+    Partially. The app uses a Windows-only library for OS-level keyboard simulation to send inputs to the browser. The remaining stack — OpenCV, MediaPipe, and pygame — is cross-platform and will run on Mac and Linux without modification.
 
     On Mac or Linux, the gesture detection and game display will function, but the gestures will not be able to control tetris.com in the browser. You can still use the built-in **keyboard controls** (arrow keys, WASD, Space, P) on any platform.
   </Accordion>
@@ -37,16 +37,16 @@ Quick answers to the most frequently asked questions about Motion-Based Tetris �
   </Accordion>
 
   <Accordion title="Where is my high score saved?">
-    High scores are saved in a hidden file called **`.highscores`** located in the project folder (the same directory as `main.py`). The score is written automatically each time a game ends via the `write_score()` function in `scores.py`.
+    High scores are saved in a hidden file called **`.highscores`** located in the project folder (the same directory as `main.py`). The score is written automatically each time a game ends.
 
     - **Do not delete this file** if you want to preserve your high score between sessions
     - To reset your high score back to zero, delete the `.highscores` file or clear its contents
   </Accordion>
 
-  <Accordion title="Can both hands be used at the same time?">
-    The app tracks up to **2 hands simultaneously** using `HandDetector(detectionCon=0.8, maxHands=2)`. However, only one gesture is acted upon per input cycle — the **left hand is checked first**, and if it produces a recognised gesture, the right hand is ignored for that cycle.
+  <Accordion title="Do both hands need to be visible for gestures to work?">
+    Yes — **both hands must be visible** in the camera frame at the same time for any gesture to register. The app only processes gesture input when it detects two hands simultaneously. If only one hand is in frame, no gesture commands will fire regardless of what finger configuration you show.
 
-    You can use either hand independently. You do not need to use both hands at the same time — a single hand performing the correct finger configuration is all that's required to trigger an action.
+    When both hands are visible, the app reads the left hand first. If your left hand shows a recognised gesture, that action is triggered. If the left hand gesture is not recognised, the right hand is checked as a fallback. Both hands being in view is a requirement, not an option.
   </Accordion>
 
   <Accordion title="How do I change the camera being used?">
@@ -68,7 +68,7 @@ Quick answers to the most frequently asked questions about Motion-Based Tetris �
   <Accordion title="Why does the game check gestures every 15–20 frames instead of every frame?">
     Reading and acting on a gesture every single frame would cause **uncontrolled input repetition**. For example, holding your index finger up to trigger "move left" would fire the left-arrow command many dozens of times per second at 50 fps, making the piece shoot across the board instantly.
 
-    The cooldown — implemented via the `framesBetweenInput` counter, which resets to `15` or `20` after each accepted input — ensures that each gesture registers as **one deliberate action**. This makes the control feel intentional and predictable, matching the behaviour of a single key press.
+    The cooldown counter starts at 20 frames and resets to 15 frames after each accepted input. This ensures that each gesture registers as **one deliberate action**, making the control feel intentional and predictable — matching the behaviour of a single key press.
   </Accordion>
 
   <Accordion title="Can I modify the gesture mappings?">
@@ -83,9 +83,9 @@ Quick answers to the most frequently asked questions about Motion-Based Tetris �
     }
     ```
 
-    Each dictionary key is a tuple of **5 values** representing the fingers `[thumb, index, middle, ring, pinky]`, where `1` means the finger is extended and `0` means it is folded. Each value is a tuple of `(state_label, keyboard_key)` — the label shown on the camera feed and the key sent to the browser via `pydirectinput`.
+    Each dictionary key is a tuple of **5 values** representing the fingers `[thumb, index, middle, ring, pinky]`, where `1` means the finger is extended and `0` means it is folded. Each value is a tuple of `(state_label, keyboard_key)` — the label shown on the camera feed and the key sent to the browser.
 
-    To remap a gesture, change the finger tuple key or the keyboard key string. To add a new gesture, add a new entry following the same pattern. Valid key names are those accepted by `pydirectinput.press()`, such as `'left'`, `'right'`, `'up'`, `'down'`, `'space'`, etc.
+    To remap a gesture, change the finger tuple key or the keyboard key string. To add a new gesture, add a new entry following the same pattern. Valid key names include `'left'`, `'right'`, `'up'`, `'down'`, `'space'`, and so on.
   </Accordion>
 
 </AccordionGroup>

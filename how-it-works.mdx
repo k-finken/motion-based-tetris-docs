@@ -1,7 +1,7 @@
 ---
-title: "How Motion-Based Tetris Detects Your Gestures"
+title: "How Motion-Based Tetris Detects and Maps Your Gestures"
 sidebarTitle: "How It Works"
-description: "Discover how Motion-Based Tetris uses MediaPipe hand tracking and CVZone to translate webcam footage into real-time Tetris controls."
+description: "Discover how Motion-Based Tetris uses MediaPipe hand tracking and CVZone to translate webcam footage into real-time Tetris controls on tetris.com."
 ---
 
 Motion-Based Tetris bridges your physical movements and the Tetris board through a continuous computer vision pipeline. Every game tick, your webcam feed is captured, hands are located and analyzed, finger states are decoded into a known gesture, and that gesture is translated into a keyboard press — all before the next frame is rendered. The result is a loop that runs at up to 50 ticks per second: **webcam feed → hand detection → finger state reading → gesture mapping → keyboard simulation → Tetris control**.
@@ -36,9 +36,9 @@ Motion-Based Tetris bridges your physical movements and the Tetris board through
 
 ## Gesture Recognition
 
-Gestures are **not** checked on every single frame. A `framesBetweenInput` counter starts at `20` and counts down each tick. Only when it reaches `0` does the app evaluate finger states and trigger a key press — at which point the counter is reset to `15`. This throttle prevents a single held gesture from firing dozens of repeated inputs in a row.
+Gestures are **not** checked on every single frame. A `framesBetweenInput` counter starts at `20` and counts down each tick. Only when it reaches `0` does the app evaluate finger states and trigger a key press — at which point the counter resets to `15`. This throttle prevents a single held gesture from firing dozens of repeated inputs in a row.
 
-The full gesture dictionaries used in `main.py` are shown below. The tuple key represents `[thumb, index, middle, ring, pinky]`, where `1` = finger raised and `0` = finger folded.
+The full gesture dictionaries are shown below. The tuple key represents `[thumb, index, middle, ring, pinky]`, where `1` = finger raised and `0` = finger folded.
 
 ```python
 left = {
@@ -55,16 +55,14 @@ right = {
 }
 ```
 
-The tuple represents `[thumb, index, middle, ring, pinky]` — `1` = finger raised, `0` = finger down.
-
 ## Two-Hand Input
 
-Both hands are tracked simultaneously in every eligible frame. The **left hand** dictionary governs left-side actions (move left, rotate left) and the **right hand** dictionary governs right-side actions (move right, rotate right). Shared actions like hard drop and move down are available on both hands.
+Both hands must be visible in the frame before any gesture is evaluated — the app requires `len(hands) == 2`. If either hand is out of frame, no input fires that tick. When both hands are detected and the throttle counter reaches zero, the left hand's gesture is checked first. If it matches a known entry in the `left` dictionary, that action fires and the right hand's result is ignored for that tick. If the left hand gesture is unrecognized, the right hand's gesture is evaluated against the `right` dictionary instead.
 
-When evaluating a frame, the left hand's gesture is checked first. If it matches a known entry in the `left` dictionary, that action fires and the right hand is skipped for that tick. If the left hand gesture is unrecognized (or the left hand is not visible), the right hand's gesture is evaluated against the `right` dictionary. This priority ordering ensures that simultaneous ambiguous gestures do not produce conflicting inputs.
+The **left hand** dictionary governs left-side actions (move left, rotate left) and the **right hand** dictionary governs right-side actions (move right, rotate right). Shared actions like hard drop and move down are available on both hands.
 
 <Note>
-  The game must be checked every ~15–20 frames rather than every frame to prevent accidental repeated inputs from a single held gesture.
+  The gesture check fires every 20 frames initially, then every 15 frames after each recognized input. Keeping both hands clearly visible in the webcam frame ensures consistent detection.
 </Note>
 
 ## Technology Stack

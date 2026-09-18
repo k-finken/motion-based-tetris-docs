@@ -1,5 +1,5 @@
 ---
-title: "Scoring System and Level Progression in Tetris"
+title: "Motion-Based Tetris Scoring: Lines, Combos, and Levels"
 sidebarTitle: "Scoring"
 description: "Learn how Motion-Based Tetris calculates your score, builds combo multipliers, increases speed with each level, and saves your all-time high score."
 ---
@@ -12,7 +12,7 @@ Motion-Based Tetris uses a classic Tetris-style scoring system augmented with **
 
 Points are awarded whenever a locked piece completes one or more full rows. The formula scales **quadratically** with the number of lines cleared at once, then multiplies by your current combo:
 
-```
+```text
 score += 100 × lines_cleared² × combo
 ```
 
@@ -33,7 +33,7 @@ score += 100 × lines_cleared² × combo
 
 Triggering a hard drop (gesture: all fingers up `[1,1,1,1,1]`, or keyboard: `Space`) instantly slams the active piece to the lowest valid row and awards **10 points per cell** the piece travels:
 
-```
+```text
 score += 10 × cells_dropped
 ```
 
@@ -48,7 +48,7 @@ The combo multiplier starts at **1** at the beginning of each game and updates e
 - **Line(s) cleared → combo increases by 1** for the next piece
 - **No lines cleared → combo resets to 1**
 
-```
+```python
 combo = combo + 1   # if lines were cleared
 combo = 1           # if no lines were cleared
 ```
@@ -67,8 +67,8 @@ Chaining even single-line clears back-to-back is often more efficient than letti
 
 Your level increases automatically as you clear lines. The threshold is:
 
-```
-if lines_total >= level × 10:
+```python
+if lines_total >= level * 10:
     level += 1
 ```
 
@@ -87,11 +87,11 @@ Every **10 cumulative lines** advances you one level. The table below shows the 
 
 Each level directly increases how fast pieces fall. The speed formula is:
 
-```
-downwards_speed = 0.6 ^ (1 + level / 10.0)
+```text
+downwards_speed = 0.6 ** (1 + level / 10.0)
 ```
 
-`0.6` is the base interval (approximately one drop every 400 ms at level 1). Because this is an **exponential decay**, speed increases become more aggressive at higher levels — level 5 is noticeably faster than level 4, and higher levels demand faster reflexes and cleaner gestures.
+`0.6` is the base downward-speed factor (approximately one drop every 400 ms at level 1). Because this is **exponential decay**, speed increases become more aggressive at higher levels — level 5 is noticeably faster than level 4, and higher levels demand faster reflexes and cleaner gestures.
 
 <Warning>
   At high levels, pieces fall so quickly that gesture detection's 15–20 frame cooldown can limit how many moves you make per piece. Practise clean, decisive gestures to maximise your input rate.
@@ -122,7 +122,7 @@ The game uses four distinct audio cues tied to scoring milestones:
 
 | Event | Sound | Trigger Condition |
 |---|---|---|
-| Line cleared | `linecleared.wav` | One or more complete rows are removed |
+| Tetris (4-line clear) | `linecleared.wav` | Exactly four or more rows are cleared in a single piece lock |
 | Level up | `levelup.wav` | Cumulative lines cross the next `level × 10` threshold |
 | High score beaten | `highscorebeaten.wav` | Score exceeds the saved high score for the first time this session (only plays if your previous high score was greater than 0) |
 | Game over | `gameover.wav` | A newly spawned piece cannot fit on the board |

@@ -14,8 +14,6 @@ Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based
 
 <CardGroup cols={2}>
   <Card title="I-Piece — Long" icon="grip-lines">
-    **Internal name:** `long`
-
     **Color:** Blue
 
     **Shape:** Four blocks arranged in a single horizontal line across a 4×4 grid.
@@ -31,8 +29,6 @@ Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based
   </Card>
 
   <Card title="O-Piece — Square" icon="square">
-    **Internal name:** `square`
-
     **Color:** Yellow
 
     **Shape:** A compact 2×2 square — all four blocks fill a perfect square.
@@ -46,8 +42,6 @@ Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based
   </Card>
 
   <Card title="T-Piece — Hat" icon="table-cells-large">
-    **Internal name:** `hat`
-
     **Color:** Pink
 
     **Shape:** A T-shaped piece — one block on top centered over a row of three.
@@ -58,12 +52,10 @@ Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based
     O O O
     ```
 
-    **Strategy:** The most versatile piece in the game. Use the rotate gesture (thumb + index finger up) to orient it for tight spots. It fits cleanly into many configurations and is especially useful for T-spins in narrow gaps.
+    **Strategy:** The most versatile piece in the game. Use the rotate gesture (thumb + index finger up) to orient it for tight spots. It fits cleanly into many configurations and is especially useful for tight gaps in your stack.
   </Card>
 
   <Card title="S-Piece — Right Snake" icon="s">
-    **Internal name:** `right_snake`
-
     **Color:** Green
 
     **Shape:** An S-shaped zigzag — two blocks on the right of the top row shift left on the bottom row.
@@ -78,8 +70,6 @@ Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based
   </Card>
 
   <Card title="Z-Piece — Left Snake" icon="z">
-    **Internal name:** `left_snake`
-
     **Color:** Red
 
     **Shape:** A reverse S-shape — two blocks on the left of the top row shift right on the bottom row.
@@ -94,8 +84,6 @@ Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based
   </Card>
 
   <Card title="J-Piece — Left Gun" icon="turn-down-left">
-    **Internal name:** `left_gun`
-
     **Color:** Cyan
 
     **Shape:** An L-shape facing left — a single block on the top-left above a row of three.
@@ -110,8 +98,6 @@ Tetris uses seven distinct pieces called tetrominoes. Each piece in Motion-Based
   </Card>
 
   <Card title="L-Piece — Right Gun" icon="turn-down-right">
-    **Internal name:** `right_gun`
-
     **Color:** Orange
 
     **Shape:** An L-shape facing right — a single block on the top-right above a row of three.
@@ -133,7 +119,7 @@ Performing the rotate gesture — **thumb and index finger raised** — rotates 
 Motion-Based Tetris supports **wall-kick**: if a rotation would place the piece out of bounds or inside an existing block, the game automatically attempts to shift the piece **one or two spaces left or right** to make the rotation fit. This means you can rotate pieces even when they are close to a wall or the top of your stack — the engine will resolve the placement for you wherever possible.
 
 <Info>
-  The O-piece (`square`) is the only tetromino that looks identical in all four rotations. Rotating it produces no visual change, so save that gesture for pieces that actually need it.
+  The O-piece (Square) is the only tetromino that looks identical in all four rotations. Rotating it produces no visual change, so save that gesture for pieces that actually need it.
 </Info>
 
 ## Shadow Piece
